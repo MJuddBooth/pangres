@@ -2,6 +2,7 @@
 Functions for preparing/compiling and executing upsert statements
 in different SQL flavors.
 """
+from __future__ import absolute_import
 from copy import deepcopy
 from sqlalchemy.sql.compiler import SQLCompiler
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -32,8 +33,8 @@ def postgres_upsert(engine, connection, table, values, if_row_exists):
                        for c in table.c
                        if c not in list(table.primary_key.columns)]
         upsert = insert_stmt.on_conflict_do_update(index_elements=table.primary_key.columns,
-                                                   set_={k: getattr(insert_stmt.excluded, k)
-                                                         for k in update_cols})        
+                                                   set_=dict((k, getattr(insert_stmt.excluded, k))
+                                                         for k in update_cols))        
     # execute upsert
     connection.execute(upsert)
 

@@ -1,4 +1,5 @@
 # +
+from __future__ import absolute_import
 import os
 import argparse
 from pkg_resources import resource_filename
@@ -34,7 +35,7 @@ def generate_doc(wiki_path):
     files_and_names = get_markdown_files_in_dir(script_dir)
     # do not render README.md this is the README for the docs folder on GitHub
     # so it is not a page for the Wiki
-    files_and_names = {k:v for k,v in files_and_names.items() if v != 'README.md'}
+    files_and_names = dict((k, v) for k,v in files_and_names.items() if v != 'README.md')
 
     # simple verification that the page "Home" is present
     has_home_md = any(['home.md' in v.lower() for v in files_and_names.values()])
@@ -47,9 +48,9 @@ def generate_doc(wiki_path):
     for file, name in files_and_names.items():
         # render the file and put it a given destination
         destination = os.path.join(wiki_path, name)
-        print(f'Rendering file "{file}"')
+        print f'Rendering file "{file}"'
         render_md_file(source=file, destination=destination)
-    print('Done')
+    print 'Done'
 
 if __name__ == '__main__':
     wiki_path = parse_arguments()

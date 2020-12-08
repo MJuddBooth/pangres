@@ -3,9 +3,11 @@
 """
 Configuration and helpers for the tests of pangres with pytest.
 """
+from __future__ import absolute_import
 import pandas as pd
 import json
 from sqlalchemy import create_engine
+from itertools import izip
 
 # # Helpers
 
@@ -39,7 +41,7 @@ def pytest_generate_tests(metafunc):
         schemas.append(schema)
         engines.append(engine)
     assert len(engines) == len(schemas)
-    metafunc.parametrize("engine, schema", list(zip(engines, schemas)), scope='module')
+    metafunc.parametrize("engine, schema", list(izip(engines, schemas)), scope='module')
 
 
 # -

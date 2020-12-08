@@ -6,6 +6,7 @@ Here we want to test if:
 2. NULL values do not cause issues
 3. Crappy text insert and column names does not cause issues
 """
+from __future__ import absolute_import
 import pandas as pd
 import random
 from sqlalchemy import VARCHAR
@@ -89,9 +90,9 @@ def test_crappy_text_insert(engine, schema):
     # add columns with crappy names
     # don't do this for MySQL which has more strict rules for column names 
     if not is_mysql:
-        for i in range(5):
+        for i in xrange(5):
             random_crappy_col_name = ''.join([random.choice(crap_char_seq)
-                                              for i in range(50)])
+                                              for i in xrange(50)])
 
             df_test = (pd.DataFrame({random_crappy_col_name: ['test', None]})
                        .rename_axis(['profileid'], axis='index', inplace=False))
@@ -102,8 +103,8 @@ def test_crappy_text_insert(engine, schema):
 
     # add crappy text in a column named 'text'
     create_random_text = lambda: ''.join([random.choice(crap_char_seq)
-                                          for i in range(10)])
+                                          for i in xrange(10)])
 
-    df_test = (pd.DataFrame({'text': [create_random_text() for i in range(10)]})
+    df_test = (pd.DataFrame({'text': [create_random_text() for i in xrange(10)]})
                .rename_axis(['profileid'], axis='index', inplace=False))
     upsert(engine=engine, schema=schema, df=df_test, if_row_exists='update', dtype=dtype, **default_args)

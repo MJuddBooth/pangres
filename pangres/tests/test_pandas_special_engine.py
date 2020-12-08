@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
+from __future__ import with_statement
+from __future__ import absolute_import
 import pandas as pd
 import pytest
 from sqlalchemy import VARCHAR

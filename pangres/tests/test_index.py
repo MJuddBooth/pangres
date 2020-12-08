@@ -8,6 +8,7 @@ Here we test different indices:
 # Note
 Other problems with indices such as duplicated values are handled by pangres.helpersPandasSpecialEngine.
 """
+from __future__ import absolute_import
 import pandas as pd
 from sqlalchemy import VARCHAR
 from sqlalchemy.exc import IntegrityError
@@ -66,5 +67,5 @@ def test_index_with_null(engine, schema):
         try:
             upsert(engine=engine, schema=schema, df=df, table_name=table_name, **default_args)
             raise ValueError('upsert did not fail as expected with null value in index')
-        except IntegrityError as e:
-            print(f'upsert failed as expected with null value in index. Error was:\n\n{e}')
+        except IntegrityError, e:
+            print f'upsert failed as expected with null value in index. Error was:\n\n{e}'

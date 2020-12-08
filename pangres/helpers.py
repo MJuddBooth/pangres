@@ -3,6 +3,9 @@
 Functions/classes/variables for interacting between a pandas DataFrame
 and postgres/mysql/sqlite (and potentially other databases).
 """
+from __future__ import division
+from __future__ import with_statement
+from __future__ import absolute_import
 import json
 import pandas as pd
 import logging
@@ -31,7 +34,7 @@ RE_CHARCOUNT_COL_TYPE = re.compile('(?<=.)+\(\d+\)')
 
 # # Class PandasSpecialEngine
 
-class PandasSpecialEngine:
+class PandasSpecialEngine(object):
 
     def __init__(self,
                  engine,
@@ -134,7 +137,7 @@ class PandasSpecialEngine:
                     s.map(lambda x: isinstance(x, (list, dict))).all())
         json_cols = [col for col in df.columns if is_json(col)]
         # merge with dtype from user
-        new_dtype = {c:JSON for c in json_cols}
+        new_dtype = dict((c, JSON) for c in json_cols)
         if dtype is not None:
             new_dtype.update(dtype)
         new_dtype = None if new_dtype == {} else new_dtype
@@ -164,7 +167,7 @@ class PandasSpecialEngine:
 
 
     @staticmethod
-    def _detect_db_type(engine) -> str:
+    def _detect_db_type(engine):
         """
         Identifies whether the dialect of given sqlalchemy 
         engine corresponds to postgres, mysql or another sql type.
@@ -183,7 +186,7 @@ class PandasSpecialEngine:
         else:
             return "other"
             
-    def table_exists(self) -> bool:
+    def table_exists(self):
         """
         Returns True if the table defined in given instance
         of PandasSpecialEngine exists else returns False.
@@ -211,7 +214,7 @@ class PandasSpecialEngine:
         """
         self.table.create(checkfirst=True)
 
-    def get_db_columns_names(self) -> list:
+    def get_db_columns_names(self):
         """
         Gets the column names of the SQL table defined
         in given instance of PandasSpecialEngine.
@@ -277,7 +280,7 @@ class PandasSpecialEngine:
         db_table = metadata.tables[namespace]
         return db_table
 
-    def get_empty_columns(self) -> list:
+    def get_empty_columns(self):
         """
         Gets a list of the columns that contain no data
         in the SQL table defined in given instance of
@@ -375,7 +378,7 @@ class PandasSpecialEngine:
         """
         if not isinstance(chunksize, int) or chunksize <= 0:
             raise ValueError('chunksize must be an integer strictly above 0')
-        chunks = [values[i:i + chunksize] for i in range(0, len(values), chunksize)]
+        chunks = [values[i:i + chunksize] for i in xrange(0, len(values), chunksize)]
         return chunks
 
     def _get_values_to_insert(self):
@@ -395,9 +398,9 @@ class PandasSpecialEngine:
         # the DataFrame. For instance using df.to_dict(orient='records')
         # can introduce types such as numpy integer which we'd have to deal with
         values = self.df.reset_index().values.tolist()
-        for i in range(len(values)):
+        for i in xrange(len(values)):
             row = values[i]
-            for j in range(len(row)):
+            for j in xrange(len(row)):
                 val = row[j]
                 # replace pd.Timestamp with datetime.datetime
                 if isinstance(val, pd.Timestamp):

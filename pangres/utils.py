@@ -1,12 +1,14 @@
 # +
+from __future__ import absolute_import
 import pandas as pd
 from pangres.logger import log
+from itertools import izip
 
 # -
 
 # # Function to fix bad column names for psycopg2
 
-def fix_psycopg2_bad_cols(df:pd.DataFrame, replacements={'%':'', '(':'', ')':''}) -> pd.DataFrame:
+def fix_psycopg2_bad_cols(df, replacements={'%':'', '(':'', ')':''}):
     """
     Replaces '%', '(' and ')' (characters that won't play nicely or even
     at all with psycopg2) in column and index names in a deep copy of df.
@@ -80,7 +82,7 @@ def fix_psycopg2_bad_cols(df:pd.DataFrame, replacements={'%':'', '(':'', ')':''}
     if not all((isinstance(v, str) for v in replacements.values())):
         raise TypeError(f'The values of replacements must all be strings')
     # replace bad col names
-    translator = {ord(k):v for k, v in replacements.items()}
+    translator = dict((ord(k), v) for k, v in replacements.items())
     new_df = df.copy(deep=True)
     renamer = lambda col: col.translate(translator) if isinstance(col, str) else col
     new_df = new_df.rename(columns=renamer).rename_axis(index=renamer)
@@ -92,7 +94,7 @@ def fix_psycopg2_bad_cols(df:pd.DataFrame, replacements={'%':'', '(':'', ')':''}
     before = df.reset_index().columns.tolist()
     after = new_df.reset_index().columns.tolist()
     changed = []
-    for i, j in zip(before, after):
+    for i, j in izip(before, after):
         if (isinstance(i, str) and isinstance(j, str)
             and i!=j):
             log(f'Renamed column/index "{i}" to "{j}s"')

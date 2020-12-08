@@ -1,4 +1,5 @@
 # +
+from __future__ import absolute_import
 import random
 import datetime
 import pandas as pd
@@ -27,32 +28,32 @@ class _TestsExampleTable(Base):
         emails = ['foo', 'bar', 'baz', 'test', 'abc', 'foobar', 'foobaz']
         domains = ['gmail.com', 'yahoo.fr', 'yahoo.com', 'outlook.fr']
         email_choices = []
-        for i in range(nb_rows):
+        for i in xrange(nb_rows):
             email = random.choice(emails)
             domain = random.choice(domains)
             email_choices.append(f'{email}@{domain}')
         timestamps = [(datetime.datetime
                        .fromtimestamp(random.randint(1000000000,1300000000))
                        .astimezone(datetime.timezone.utc))
-                      for i in range(nb_rows)]
+                      for i in xrange(nb_rows)]
         colors = ['yellow', 'blue', 'pink', 'red', 'orange', 'brown']
         favorite_colors = []
-        for i in range(nb_rows):
-            l = [random.choice(colors) for i in range(random.randint(1,3))]
+        for i in xrange(nb_rows):
+            l = [random.choice(colors) for i in xrange(random.randint(1,3))]
             favorite_colors.append(l)
         data = {# IMPORTANT! for our tests make profileid incremental!
                 # it's not an integer (see table definition for an explanation why not)
                 # but we just add a prefix or something to an incremented number
-                'profileid':[str(f'abc{i}') for i in range(nb_rows)],
+                'profileid':[str(f'abc{i}') for i in xrange(nb_rows)],
                 'email':email_choices,
                 'timestamp':timestamps,
-                'size_in_meters':[random.uniform(1.5,2.3) for i in range(nb_rows)],
-                'likes_pizza':[random.choice([True, False]) for i in range(nb_rows)],
+                'size_in_meters':[random.uniform(1.5,2.3) for i in xrange(nb_rows)],
+                'likes_pizza':[random.choice([True, False]) for i in xrange(nb_rows)],
                 'favorite_colors':favorite_colors}
         df = pd.DataFrame(data).set_index('profileid')
         return df
 
-class DocsExampleTable():
+class DocsExampleTable(object):
     """
     Example DataFrames for the docs.
     """

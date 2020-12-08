@@ -1,5 +1,9 @@
+# -*- coding: utf-8 -*-
+from __future__ import with_statement
+from __future__ import absolute_import
 import setuptools
 import os
+from io import open
 
 here = os.path.abspath(os.path.dirname(__file__))
 description = 'Postgres insert update with pandas DataFrames.'
@@ -8,9 +12,12 @@ description = 'Postgres insert update with pandas DataFrames.'
 try:
     with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
         long_description = '\n' + f.read()
-except FileNotFoundError:
+except EnvironmentError:
     long_description = description
-
+except TypeError:
+    with open(os.path.join(here, 'README.md')) as f:
+        long_description = '\n' + f.read()
+    
 
 with open(os.path.join(here, "requirements.txt"),"r") as f:
     requirements = [line.strip() for line in f.readlines()]

@@ -5,6 +5,7 @@ Thanks to LawrentChen on GitHub for pointing out this is possible and providing 
 with an example.
 See https://github.com/ThibTrip/pangres/issues/12
 """
+from __future__ import absolute_import
 import pandas as pd
 import datetime
 from pangres import upsert
@@ -70,7 +71,7 @@ def test_upsert_with_unique_keys(engine, schema):
     # add initial data (df_old)
     upsert(engine=engine, df=df_old, schema=schema, table_name='test_unique_key', if_row_exists='update')
     df = read_from_db()
-    df_expected = df_old.assign(row_id=range(1, 4)).reset_index().set_index('row_id')
+    df_expected = df_old.assign(row_id=xrange(1, 4)).reset_index().set_index('row_id')
     pd.testing.assert_frame_equal(df, df_expected)
 
     # add new data (df_new)

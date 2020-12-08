@@ -4,6 +4,7 @@
 This module tests if uploading data in chunks works as
 expected (we should get the correct DataFrame length back).
 """
+from __future__ import absolute_import
 import pandas as pd
 from sqlalchemy import VARCHAR
 from pangres import upsert
