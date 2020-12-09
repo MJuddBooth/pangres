@@ -256,8 +256,8 @@ class PandasSpecialEngine(object):
             for col in cols_to_add:
                 col.table = None # Important! unbound column from table
                 op.add_column(self.table.name, col, schema=self.schema)
-                log(f"Added column {col} (type: {col.type}) in table {self.table.name} "
-                    f'(schema="{self.schema})"')
+                log("Added column {} (type: {}) in table {} "
+                    '(schema="{})"'.format(col, col.type, self.table.name, self.schema))
 
 
     def get_db_table_schema(self):
@@ -276,7 +276,7 @@ class PandasSpecialEngine(object):
         
         metadata = MetaData(bind=engine, schema=schema)
         metadata.reflect(bind=engine, schema=schema, only=[table_name])
-        namespace = table_name if schema is None else f'{schema}.{table_name}'
+        namespace = table_name if schema is None else '{}.{}'.format(schema, table_name)
         db_table = metadata.tables[namespace]
         return db_table
 
@@ -352,7 +352,7 @@ class PandasSpecialEngine(object):
                     if self._db_type == 'postgres':
                         escaped_col = str(new_col.compile(dialect=self.engine.dialect))
                         compiled_type = new_col.type.compile(dialect=self.engine.dialect)
-                        alter_kwargs = {'postgresql_using':f'{escaped_col}::{compiled_type}'}
+                        alter_kwargs = {'postgresql_using':'{}::{}'.format(escaped_col, compiled_type)}
                     else:
                         alter_kwargs = {}
                     op.alter_column(table_name=self.table.name,
@@ -360,9 +360,9 @@ class PandasSpecialEngine(object):
                                     type_=new_col.type,
                                     schema=self.schema,
                                     **alter_kwargs)
-                    log(f"Changed type of column {new_col.name} "
-                        f"from {col.type} to {new_col.type} "
-                        f'in table {self.table.name} (schema="{self.schema}")')
+                    log("Changed type of column {} "
+                        "from {} to {} "
+                        'in table {} (schema="{}")'.format(new_col.name, col.type, new_col.type, self.table.name, self.schema))
 
     @staticmethod
     def _create_chunks(values, chunksize=10000):
@@ -459,8 +459,8 @@ class PandasSpecialEngine(object):
                        '(e.g. post a GitHub issue)!')
                 raise NotImpletementedError(err)
             if chunksize > new_chunksize:
-                log(f'Reduced chunksize from {chunksize} to {new_chunksize} due '
-                    'to SQlite max variable restriction (max 999).',
+                log('Reduced chunksize from {} to {} due '
+                    'to SQlite max variable restriction (max 999).'.format(chunksize, new_chunksize),
                     level=logging.WARNING)
             chunksize=new_chunksize
         # creat chunks
@@ -479,14 +479,14 @@ class PandasSpecialEngine(object):
                                      if_row_exists=if_row_exists)
 
     def __repr__(self):
-        text = f"""PandasSpecialEngine (id {id(self)}, hexid {hex(id(self))})
-                   * connection: {self.engine}
-                   * schema: {self.schema}
-                   * table: {self.table.name}
-                   * SQLalchemy table model:\n{self.table.__repr__()}"""
+        text = """PandasSpecialEngine (id {}, hexid {})
+                   * connection: {}
+                   * schema: {}
+                   * table: {}
+                   * SQLalchemy table model:\n{}""".format(id(self), hex(id(self)), self.engine, self.schema, self.table.name, self.table.__repr__())
         text = '\n'.join([line.strip() for line in text.splitlines()])
         
         df_repr = (str(self.df.head()) if not hasattr(self.df, 'to_markdown')
                    else str(self.df.head().to_markdown()))
-        text += f'\n* df.head():\n{df_repr}'
+        text += '\n* df.head():\n{}'.format(df_repr)
         return text
