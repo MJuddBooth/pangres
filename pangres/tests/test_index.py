@@ -21,12 +21,12 @@ from pangres.tests.conftest import drop_table_if_exists
 # +
 # for creating table with MultiIndex
 index_col = ['ix1', 'ix2', 'ix3']
-df_multiindex = pd.DataFrame({'ix1': [1, 1], 'ix2': ['test', 'test2'], 
+df_multiindex = pd.DataFrame({'ix1': [1, 1], 'ix2': ['test', 'test2'],
                               'ix3': [pd.Timestamp('2019-01-01'), pd.Timestamp('2019-01-02')],
                               'foo': [1, 2]}).set_index(index_col)
 
 # for inserting values
-df_multiindex2 = pd.DataFrame({'ix1': [2, 2], 'ix2': ['test', 'test2'], 
+df_multiindex2 = pd.DataFrame({'ix1': [2, 2], 'ix2': ['test', 'test2'],
                               'ix3': [pd.Timestamp('2019-01-01'), pd.Timestamp('2019-01-02')],
                               'foo': [1, 2]}).set_index(index_col)
 
@@ -42,18 +42,19 @@ default_args = {'if_row_exists':'update',
 
 def test_create_and_insert_table_multiindex(engine, schema):
     table_name = 'test_multiindex'
-    namespace = f'{schema}.{table_name}' if schema is not None else table_name
+    namespace = '{}.{}'.format(schema, table_name) if schema is not None else table_name
     drop_table_if_exists(engine=engine, schema=schema, table_name=table_name)
     # dtype for index for MySQL... (can't have flexible text length)
     dtype = {'ix2':VARCHAR(5)} if 'mysql' in engine.dialect.dialect_description else None
 
+    select_stmnt = 'SELECT * FROM {}'.format(namespace)
     # create
     upsert(engine=engine, schema=schema, df=df_multiindex, table_name=table_name, dtype=dtype, **default_args)
-    df_db = pd.read_sql(f'SELECT * FROM {namespace}', con=engine, index_col=index_col)
+    df_db = pd.read_sql(select_stmnt, con=engine, index_col=index_col)
 
     # insert
     upsert(engine=engine, schema=schema, df=df_multiindex2, table_name=table_name, dtype=dtype, **default_args)
-    df_db = pd.read_sql(f'SELECT * FROM {namespace}', con=engine, index_col=index_col)
+    df_db = pd.read_sql(select_stmnt, con=engine, index_col=index_col)
 
 
 # ## Test index with null value
@@ -68,4 +69,4 @@ def test_index_with_null(engine, schema):
             upsert(engine=engine, schema=schema, df=df, table_name=table_name, **default_args)
             raise ValueError('upsert did not fail as expected with null value in index')
         except IntegrityError, e:
-            print f'upsert failed as expected with null value in index. Error was:\n\n{e}'
+            print('upsert failed as expected with null value in index. Error was:\n\n{}'.format(e))

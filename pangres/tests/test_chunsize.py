@@ -16,7 +16,7 @@ from pangres.tests.conftest import read_example_table_from_db, drop_table_if_exi
 
 def insert_chunks(engine, schema, chunksize, nb_rows):
     df = _TestsExampleTable.create_example_df(nb_rows=nb_rows)
-    table_name=f'test_insert_chunksize_{chunksize}'
+    table_name='test_insert_chunksize_{}'.format(chunksize)
     drop_table_if_exists(engine=engine, schema=schema, table_name=table_name)
     upsert(schema=schema,
            table_name=table_name,

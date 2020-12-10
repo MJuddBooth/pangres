@@ -31,7 +31,7 @@ class _TestsExampleTable(Base):
         for i in xrange(nb_rows):
             email = random.choice(emails)
             domain = random.choice(domains)
-            email_choices.append(f'{email}@{domain}')
+            email_choices.append('{}@{}'.format(email, domain))
         timestamps = [(datetime.datetime
                        .fromtimestamp(random.randint(1000000000,1300000000))
                        .astimezone(datetime.timezone.utc))
@@ -44,7 +44,7 @@ class _TestsExampleTable(Base):
         data = {# IMPORTANT! for our tests make profileid incremental!
                 # it's not an integer (see table definition for an explanation why not)
                 # but we just add a prefix or something to an incremented number
-                'profileid':[str(f'abc{i}') for i in xrange(nb_rows)],
+                'profileid':[str('abc{}'.format(i)) for i in xrange(nb_rows)],
                 'email':email_choices,
                 'timestamp':timestamps,
                 'size_in_meters':[random.uniform(1.5,2.3) for i in xrange(nb_rows)],

@@ -12,8 +12,8 @@ from itertools import izip
 # # Helpers
 
 def drop_table_if_exists(engine, schema, table_name):
-    namespace = f'{schema}.{table_name}' if schema is not None else table_name
-    engine.execute(f'DROP TABLE IF EXISTS {namespace};')
+    namespace = '{}.{}'.format(schema, table_name) if schema is not None else table_name
+    engine.execute('DROP TABLE IF EXISTS {};'.format(namespace))
 
 
 # ## Class TestDB
@@ -35,7 +35,7 @@ def pytest_generate_tests(metafunc):
     schemas = []
     for db_type, conn_string in conn_strings.items():
         if conn_string is None:
-            raise ValueError(f'Missing connection string for database type: {db_type}')
+            raise ValueError('Missing connection string for database type: {}'.format(db_type))
         schema = metafunc.config.option.pg_schema if db_type == 'pg' else None
         engine = create_engine(conn_string)
         schemas.append(schema)
@@ -58,8 +58,8 @@ def read_example_table_from_db(engine, schema, table_name):
         if isinstance(obj, str):
             return json.loads(obj)
         return obj
-    namespace = f'{schema}.{table_name}' if schema is not None else table_name
-    df_db = (pd.read_sql(f'SELECT * FROM {namespace}', con=engine, index_col='profileid')
+    namespace = '{}.{}'.format(schema, table_name) if schema is not None else table_name
+    df_db = (pd.read_sql('SELECT * FROM {}'.format(namespace), con=engine, index_col='profileid')
              .astype({'likes_pizza':bool})
              .assign(timestamp=lambda df: pd.to_datetime(df['timestamp'], utc=True))
              .assign(favorite_colors= lambda df: df['favorite_colors'].map(load_json_if_needed)))

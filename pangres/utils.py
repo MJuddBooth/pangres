@@ -78,9 +78,9 @@ def fix_psycopg2_bad_cols(df, replacements={'%':'', '(':'', ')':''}):
     if ((not isinstance(replacements, dict)) or
         (set(replacements.keys()) - set(expected_keys) != set()) or 
         (len(replacements) != len(expected_keys))):
-        raise TypeError(f'replacements must be a dict containing the following keys (and none other): {expected_keys}')
+        raise TypeError('replacements must be a dict containing the following keys (and none other): {}'.format(expected_keys))
     if not all((isinstance(v, str) for v in replacements.values())):
-        raise TypeError(f'The values of replacements must all be strings')
+        raise TypeError('The values of replacements must all be strings')
     # replace bad col names
     translator = dict((ord(k), v) for k, v in replacements.items())
     new_df = df.copy(deep=True)
@@ -97,7 +97,7 @@ def fix_psycopg2_bad_cols(df, replacements={'%':'', '(':'', ')':''}):
     for i, j in izip(before, after):
         if (isinstance(i, str) and isinstance(j, str)
             and i!=j):
-            log(f'Renamed column/index "{i}" to "{j}s"')
+            log('Renamed column/index "{}" to "{}s"'.format(i, j))
     return new_df
 
 

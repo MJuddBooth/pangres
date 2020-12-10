@@ -61,8 +61,8 @@ df_new = pd.DataFrame(data_new).set_index(['order_id', 'product_id'])
 def test_upsert_with_unique_keys(engine, schema):
 
     # helpers
-    namespace = f'{schema}.{table_name}' if schema is not None else table_name
-    read_from_db = lambda: pd.read_sql(f'SELECT * FROM {namespace}', con=engine, index_col='row_id')
+    namespace = '{}.{}'.format(schema, table_name) if schema is not None else table_name
+    read_from_db = lambda: pd.read_sql('SELECT * FROM {}'.format(namespace), con=engine, index_col='row_id')
 
     # create our test table
     drop_table_if_exists(engine=engine, schema=schema, table_name=table_name)

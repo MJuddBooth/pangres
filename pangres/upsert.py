@@ -135,7 +135,7 @@ def sqlite_upsert(engine, connection, table, values, if_row_exists):
 
     # append on conflict clause
     pk = [escape_col(c) for c in table.primary_key]
-    ondup = f'ON CONFLICT ({",".join(pk)})'
+    ondup = 'ON CONFLICT ({})'.format(",".join(pk))
     if if_row_exists == 'ignore':
         ondup_action = 'DO NOTHING'
         insert.string = ' '.join((insert.string, ondup, ondup_action))
@@ -143,6 +143,6 @@ def sqlite_upsert(engine, connection, table, values, if_row_exists):
         ondup_action = 'DO UPDATE SET'
         non_pks = [escape_col(c) for c in table.columns
                    if c not in list(table.primary_key)]
-        updates = ', '.join(f'{c}=EXCLUDED.{c}' for c in non_pks)
+        updates = ', '.join('{}=EXCLUDED.{}'.format(c, c) for c in non_pks)
         insert.string = ' '.join((insert.string, ondup, ondup_action, updates))
     connection.execute(insert)
